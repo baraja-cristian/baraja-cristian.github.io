@@ -3,741 +3,1102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KIRO | Software Lead & Architecture</title>
-
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+    <title>KIRO — Software Lead & Architecture</title>
+    
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
-
-    <!-- AOS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&family=Archivo:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     <style>
-        :root {
-            --mint: #8FC899;
-            --gold: #F2C12E;
-            --dark-bg: #040404;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            /* Colors */
+            --primary: #8FC899;
+            --accent: #F2C12E;
+            --dark: #0A0A0A;
+            --darker: #050505;
+            --light: #FAFAFA;
+            --gray: #999;
+            
+            /* Fonts */
+            --font-display: 'DM Serif Display', serif;
+            --font-mono: 'Space Mono', monospace;
+            --font-body: 'Archivo', sans-serif;
+        }
+
         html {
             scroll-behavior: smooth;
-            scroll-padding-top: 80px;
         }
 
         body {
-            background-color: var(--dark-bg);
-            color: #fff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.7;
             overflow-x: hidden;
-            line-height: 1.6;
         }
 
-        .mono { 
-            font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        ::selection {
+            background: var(--primary);
+            color: var(--dark);
         }
 
-        /* Navbar Responsive */
-        .navbar {
-            background: rgba(4,4,4,.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 0.8rem 0;
-            min-height: 70px;
+        /* Custom Cursor Effect */
+        @media (pointer: fine) {
+            body {
+                cursor: none;
+            }
+            
+            a, button {
+                cursor: none;
+            }
         }
 
-        .navbar-brand {
-            font-size: clamp(1.1rem, 3vw, 1.3rem);
+        .cursor {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease;
+            mix-blend-mode: difference;
+            display: none;
         }
 
-        .navbar-toggler {
-            border: 1px solid var(--glass-border);
-            padding: 0.4rem 0.6rem;
+        .cursor-follower {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.2s ease;
+            opacity: 0.5;
+            display: none;
         }
 
-        .navbar-toggler:focus {
-            box-shadow: none;
+        @media (pointer: fine) {
+            .cursor,
+            .cursor-follower {
+                display: block;
+            }
         }
 
-        .navbar-nav {
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0) 100%);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
             gap: 0.5rem;
         }
 
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+            align-items: center;
+        }
+
         .nav-link {
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            padding: 0.5rem 1rem !important;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
             transition: color 0.3s;
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
         }
 
         .nav-link:hover {
-            color: var(--mint) !important;
+            color: var(--primary);
         }
 
-        /* Hero Responsive */
+        .nav-cta {
+            padding: 0.7rem 1.5rem;
+            background: var(--light);
+            color: var(--dark);
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Menu */
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mobile-toggle span {
+            width: 24px;
+            height: 2px;
+            background: var(--light);
+            transition: all 0.3s;
+        }
+
+        /* Hero Section */
         .hero {
-            padding-top: clamp(100px, 20vw, 140px);
-            padding-bottom: clamp(40px, 10vw, 60px);
-        }
-
-        h1 {
-            font-size: clamp(2rem, 8vw, 5rem);
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            line-height: 1.1;
-            margin-bottom: 1rem;
-        }
-
-        .hero p {
-            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
-            max-width: 90%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, var(--mint), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-        }
-
-        /* Cards Responsive */
-        .card-jeton {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: clamp(1.5rem, 4vw, 2rem);
-            transition: .4s;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100%;
-            margin-bottom: 1rem;
+            justify-content: center;
+            padding: 8rem 4rem 4rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card-jeton:hover {
-            border-color: var(--mint);
-            transform: translateY(-6px);
-            background: rgba(255,255,255,.06);
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(143, 200, 153, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(242, 193, 46, 0.05) 0%, transparent 50%);
+            pointer-events: none;
         }
 
-        .project-visual {
-            height: clamp(150px, 30vw, 200px);
-            border-radius: 16px;
+        .hero-tag {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 12vw, 8rem);
+            line-height: 1;
+            margin-bottom: 2rem;
+            font-weight: 400;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            color: var(--gray);
+            max-width: 700px;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+        }
+
+        .btn-primary {
+            padding: 1.2rem 3rem;
+            background: var(--light);
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: inline-block;
+            border: 2px solid var(--light);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--light);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            color: var(--gray);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            gap: 0.5rem;
+            transition: color 0.3s;
         }
 
-        /* Buttons Responsive */
-        .btn-whatsapp {
-            background: #fff;
-            color: #000;
-            border-radius: 100px;
-            padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 30px);
-            font-weight: 700;
-            text-decoration: none;
-            transition: .3s;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            display: inline-block;
-            text-align: center;
-            white-space: nowrap;
+        .btn-secondary:hover {
+            color: var(--primary);
         }
 
-        .btn-whatsapp:hover {
-            background: var(--mint);
-            transform: scale(1.05);
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
         }
 
-        /* Sections Responsive */
+        /* Section Styles */
         section {
-            padding: clamp(2rem, 6vw, 4rem) 0;
+            padding: 8rem 4rem;
+            position: relative;
         }
 
-        h2 {
-            font-size: clamp(1.8rem, 5vw, 2.5rem);
+        .section-header {
+            margin-bottom: 5rem;
+        }
+
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 2px;
             margin-bottom: 1rem;
+            display: block;
         }
 
-        h4 {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-style: italic;
+            font-weight: 400;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
         }
 
-        h5 {
-            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+        .section-description {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
+            font-weight: 300;
         }
 
-        /* Benefits Grid Responsive */
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 3rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(143, 200, 153, 0.3);
+            transform: translateY(-8px);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            display: block;
+            color: var(--primary);
+        }
+
+        .service-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-family: var(--font-body);
+        }
+
+        .service-description {
+            color: var(--gray);
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            background: linear-gradient(180deg, var(--darker) 0%, #0F0F0F 50%, var(--darker) 100%);
+        }
+
         .benefits-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
         }
 
         .benefit-item {
             text-align: center;
-            padding: 1.5rem;
         }
 
-        .benefit-item i {
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
+        .benefit-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary);
+            transition: all 0.4s;
+        }
+
+        .benefit-item:hover .benefit-icon {
+            background: var(--primary);
+            color: var(--dark);
+            transform: rotate(360deg);
+        }
+
+        .benefit-title {
+            font-size: 1.3rem;
+            font-weight: 600;
             margin-bottom: 1rem;
-            color: var(--mint);
         }
 
-        /* Footer Responsive */
+        .benefit-description {
+            color: var(--gray);
+            font-weight: 300;
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            transition: all 0.4s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card:hover {
+            transform: scale(1.02);
+            border-color: rgba(143, 200, 153, 0.3);
+        }
+
+        .project-visual {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+        }
+
+        .project-content {
+            padding: 2.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .project-description {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            flex: 1;
+        }
+
+        .project-tech {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .project-tech li {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            background: rgba(143, 200, 153, 0.1);
+            border-radius: 3px;
+        }
+
+        /* Footer Logo Section */
+        .footer-logo-section {
+            padding: 8rem 4rem;
+            background: linear-gradient(180deg, var(--darker) 0%, #0F0F0F 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-logo-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(143, 200, 153, 0.05) 0%, transparent 70%);
+        }
+
+        .footer-logo {
+            max-width: 1200px;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 10px 40px rgba(143, 200, 153, 0.15));
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Footer */
         footer {
-            border-top: 1px solid var(--glass-border);
-            background: #000;
-            margin-top: clamp(3rem, 8vw, 120px);
-            padding: clamp(3rem, 8vw, 90px) 0 clamp(2rem, 5vw, 40px);
+            background: var(--dark);
+            padding: 6rem 4rem 3rem;
         }
 
-        .footer-header {
-            font-size: clamp(0.75rem, 2vw, 0.8rem);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1.5rem;
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
             font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
         }
 
-        .footer-item {
-            color: #888;
+        .footer-description {
+            color: var(--gray);
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .footer-title {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--light);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-link {
+            color: var(--gray);
             text-decoration: none;
-            display: block;
-            margin-bottom: 10px;
-            font-size: clamp(0.85rem, 2vw, 0.9rem);
-            transition: .3s;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: inline-block;
+            font-weight: 300;
         }
 
-        .footer-item:hover { 
-            color: var(--gold); 
+        .footer-link:hover {
+            color: var(--primary);
             transform: translateX(5px);
         }
 
-        /* IMAGEN FOOTER CON DIMENSIONES ESPECÍFICAS */
-        .footer-logo-container {
+        .footer-social {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
+            margin-top: 1rem;
         }
 
-        .footer-logo-img {
-            /* Dimensiones originales: 823,3536px × 300,6953px */
-            /* Ratio: 823.3536 / 300.6953 = 2.74 (aproximadamente 2.74:1) */
-            width: 100%;
-            max-width: 823px; /* Tamaño máximo según dimensiones originales */
-            height: auto;
-            aspect-ratio: 823.3536 / 300.6953; /* Mantiene el ratio exacto */
-            object-fit: contain;
-            margin-bottom: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+        .footer-social a {
+            color: var(--gray);
+            font-size: 1.5rem;
+            transition: all 0.3s;
         }
 
-        .footer-logo-img:hover {
-            transform: scale(1.02);
+        .footer-social a:hover {
+            color: var(--primary);
+            transform: translateY(-3px);
         }
 
-        .footer-logo-text {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, var(--mint), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .footer-bottom {
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
             text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--gray);
         }
 
-        /* Container adjustments */
-        .container {
-            padding-left: clamp(1rem, 4vw, 2rem);
-            padding-right: clamp(1rem, 4vw, 2rem);
-            max-width: 1400px;
-        }
-
-        /* Spacing utilities */
-        .section-spacing {
-            margin-bottom: clamp(2rem, 5vw, 4rem);
-        }
-
-        /* Text sizes responsive */
-        .text-secondary {
-            font-size: clamp(0.9rem, 2vw, 1rem);
-        }
-
-        .small {
-            font-size: clamp(0.85rem, 2vw, 0.9rem);
-        }
-
-        /* Grid gaps responsive */
-        .row.g-4 {
-            --bs-gutter-x: clamp(1rem, 3vw, 1.5rem);
-            --bs-gutter-y: clamp(1rem, 3vw, 1.5rem);
-        }
-
-        /* Mobile-specific adjustments */
-        @media (max-width: 576px) {
-            .navbar-collapse {
-                background: rgba(4,4,4,.98);
-                border-radius: 12px;
-                padding: 1rem;
-                margin-top: 0.5rem;
-                border: 1px solid var(--glass-border);
-            }
-
-            .nav-item.ms-lg-3 {
-                margin-left: 0 !important;
-                margin-top: 0.5rem;
-            }
-
-            .hero .btn-whatsapp {
-                width: 100%;
-                margin-bottom: 1rem;
-            }
-
-            .hero .mono {
-                display: block;
-                margin-bottom: 0.5rem;
-            }
-
-            .project-visual {
-                height: 140px;
-            }
-
-            .footer-col {
-                margin-bottom: 2rem;
-            }
-
-            .text-center-mobile {
-                text-align: center;
-            }
-
-            .d-flex.gap-3 {
-                justify-content: center !important;
-            }
-
-            /* Ajustes específicos para imagen en móvil */
-            .footer-logo-img {
-                max-width: 100%;
-                padding: 0 1rem;
-            }
-
-            .footer-logo-text {
-                font-size: 1.3rem;
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr 1fr;
             }
         }
 
-        /* Tablet adjustments */
-        @media (min-width: 577px) and (max-width: 768px) {
-            .navbar-nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
+        @media (max-width: 900px) {
+            nav {
+                padding: 1.5rem 2rem;
             }
 
-            .card-jeton {
-                padding: 1.5rem;
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 300px;
+                height: 100vh;
+                background: var(--dark);
+                flex-direction: column;
+                padding: 6rem 2rem;
+                transition: right 0.3s;
+                align-items: flex-start;
+                gap: 2rem;
             }
 
-            .project-visual {
-                height: 180px;
+            .nav-menu.active {
+                right: 0;
             }
 
-            .footer-col {
-                margin-bottom: 2rem;
+            .mobile-toggle {
+                display: flex;
+                z-index: 1001;
             }
 
-            /* Ajustes para imagen en tablet */
-            .footer-logo-img {
-                max-width: 90%;
+            .mobile-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(8px, 8px);
             }
-        }
 
-        /* Desktop optimizations */
-        @media (min-width: 992px) {
-            .navbar {
-                padding: 1rem 0;
+            .mobile-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .mobile-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
             }
 
             .hero {
-                padding-top: 160px;
+                padding: 6rem 2rem 4rem;
             }
 
-            .benefit-item {
+            section {
+                padding: 5rem 2rem;
+            }
+
+            .services-grid,
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .footer-logo-section {
+                padding: 5rem 2rem;
+            }
+
+            footer {
+                padding: 4rem 2rem 2rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .service-card,
+            .project-content {
                 padding: 2rem;
             }
 
-            /* Ajustes para imagen en desktop */
-            .footer-logo-img {
-                max-width: 70%;
+            .benefits-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        /* Large screens */
-        @media (min-width: 1200px) {
-            h1 {
-                font-size: 5rem;
-            }
-
-            .hero p {
-                font-size: 1.2rem;
-                max-width: 800px;
-            }
-
-            /* Ajustes para imagen en pantallas grandes */
-            .footer-logo-img {
-                max-width: 60%;
-            }
-        }
-
-        /* Extra large screens */
-        @media (min-width: 1400px) {
-            .footer-logo-img {
-                max-width: 50%;
-            }
-        }
-
-        /* Animation delays for mobile */
-        @media (max-width: 768px) {
-            [data-aos-delay] {
-                transition-delay: 0s !important;
-            }
-        }
-
-        /* Touch device optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .card-jeton:hover {
-                transform: none;
-            }
-            
-            .btn-whatsapp:hover {
-                transform: none;
-            }
-            
-            .footer-item:hover {
-                transform: none;
-            }
-            
-            .footer-logo-img:hover {
-                transform: none;
-            }
+        /* Scroll Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 9999;
+            transform-origin: left;
         }
     </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="img/logo-icono.png" height="32" alt="KIRO Logo" 
-                 onerror="this.src='https://placehold.co/40x40/8FC899/000?text=K'">
-            <span class="ms-2 fw-bold mono">KIRO</span>
+    <!-- Custom Cursors -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <img src="img/logo-icono.png" alt="KIRO" class="logo-icon" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
+            KIRO
         </a>
+        
+        <ul class="nav-menu">
+            <li><a href="#servicios" class="nav-link">Servicios</a></li>
+            <li><a href="#beneficios" class="nav-link">Beneficios</a></li>
+            <li><a href="#proyectos" class="nav-link">Proyectos</a></li>
+            <li><a href="https://wa.me/593963905728" class="nav-link nav-cta">Contacto</a></li>
+        </ul>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" 
-                aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <button class="mobile-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
         </button>
+    </nav>
 
-        <div class="collapse navbar-collapse" id="nav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link" href="#beneficios">Beneficios</a></li>
-                <li class="nav-item"><a class="nav-link" href="#proyectos">Proyectos</a></li>
-                <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-                    <a href="https://wa.me/593963905728" class="btn-whatsapp d-inline-block">Contacto</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<!-- HERO -->
-<section class="container hero text-center" data-aos="fade">
-    <span class="mono d-block mb-2" style="color:var(--gold)"> // SOFTWARE_LEAD_ARCHITECTURE</span>
-    <h1 class="mb-3">Arquitectura que <span class="text-gradient">impulsa negocios</span></h1>
-    <p class="text-secondary mx-auto mb-4">
-        Construimos soluciones técnicas que escalan globalmente: microservicios, APIs, Cloud y operaciones automatizadas.
-    </p>
-    <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-3">
-        <a href="https://wa.me/593963905728" class="btn-whatsapp">Contactar experto</a>
-        <a href="#beneficios" class="text-white small mono text-decoration-none">¿Por qué KIRO?</a>
-    </div>
-</section>
-
-<!-- SERVICIOS -->
-<section id="servicios" class="container">
-    <div class="row g-4">
-        <div class="col-md-4" data-aos="fade-up">
-            <div class="card-jeton">
-                <i class="bi bi-stack fs-1 mb-3" style="color:var(--mint)"></i>
-                <h4 class="fw-bold">Microservicios</h4>
-                <p class="text-secondary small">
-                    Arquitecturas desacopladas, resilientes y escalables.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card-jeton">
-                <i class="bi bi-braces fs-1 mb-3" style="color:var(--gold)"></i>
-                <h4 class="fw-bold">Web & APIs</h4>
-                <p class="text-secondary small">
-                    Web apps modernas y APIs robustas con diseño seguro.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card-jeton">
-                <i class="bi bi-gear-wide-connected fs-1 mb-3" style="color:var(--mint)"></i>
-                <h4 class="fw-bold">Asesoría Lead</h4>
-                <p class="text-secondary small">
-                    Liderazgo técnico y consultoría estratégica para equipos IT.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- BENEFICIOS / FEATURES -->
-<section id="beneficios" class="container">
-    <div class="text-center mb-5" data-aos="fade">
-        <span class="mono d-block mb-2" style="color: var(--gold)">// BENEFICIOS</span>
-        <h2 class="fw-bold mb-3">Lo que realmente ofrecemos</h2>
-        <p class="text-secondary mx-auto">
-            Soluciones técnicas y productivas que aceleran tu desarrollo sin dolor: desde código hasta operación.
+    <!-- Hero -->
+    <section class="hero">
+        <span class="hero-tag">// SOFTWARE_LEAD_ARCHITECTURE</span>
+        <h1 class="hero-title">
+            Arquitectura que<br>
+            <span class="gradient-text">impulsa negocios</span>
+        </h1>
+        <p class="hero-subtitle">
+            Construimos soluciones técnicas que escalan globalmente: microservicios, APIs, Cloud y operaciones automatizadas.
         </p>
-    </div>
+        <div class="hero-actions">
+            <a href="https://wa.me/593963905728" class="btn-primary">Contactar experto</a>
+            <a href="#beneficios" class="btn-secondary">
+                ¿Por qué KIRO? <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </section>
 
-    <div class="row g-4">
-        <div class="col-md-6 col-lg-3 text-center" data-aos="fade-up">
+    <!-- Services -->
+    <section id="servicios">
+        <div class="section-header">
+            <span class="section-tag">// SERVICIOS</span>
+            <h2 class="section-title">Lo que hacemos mejor</h2>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="bi bi-stack service-icon"></i>
+                <h3 class="service-title">Microservicios</h3>
+                <p class="service-description">
+                    Arquitecturas desacopladas, resilientes y escalables que se adaptan a las necesidades de tu negocio.
+                </p>
+            </div>
+
+            <div class="service-card">
+                <i class="bi bi-braces service-icon"></i>
+                <h3 class="service-title">Web & APIs</h3>
+                <p class="service-description">
+                    Web apps modernas y APIs robustas con diseño seguro y performance optimizado.
+                </p>
+            </div>
+
+            <div class="service-card">
+                <i class="bi bi-gear-wide-connected service-icon"></i>
+                <h3 class="service-title">Asesoría Lead</h3>
+                <p class="service-description">
+                    Liderazgo técnico y consultoría estratégica para equipos IT de alto rendimiento.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits -->
+    <section id="beneficios" class="benefits">
+        <div class="section-header">
+            <span class="section-tag">// BENEFICIOS</span>
+            <h2 class="section-title">Lo que realmente ofrecemos</h2>
+            <p class="section-description">
+                Soluciones técnicas y productivas que aceleran tu desarrollo sin dolor: desde código hasta operación.
+            </p>
+        </div>
+
+        <div class="benefits-grid">
             <div class="benefit-item">
-                <i class="bi bi-box-arrow-up-right"></i>
-                <h5 class="fw-bold">Deploy sin fricción</h5>
-                <p class="text-secondary small">
+                <div class="benefit-icon">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </div>
+                <h3 class="benefit-title">Deploy sin fricción</h3>
+                <p class="benefit-description">
                     Procesos automáticos de despliegue con mínima configuración.
                 </p>
             </div>
-        </div>
 
-        <div class="col-md-6 col-lg-3 text-center" data-aos="fade-up" data-aos-delay="100">
             <div class="benefit-item">
-                <i class="bi bi-diagram-3"></i>
-                <h5 class="fw-bold">Networking inteligente</h5>
-                <p class="text-secondary small">
+                <div class="benefit-icon">
+                    <i class="bi bi-diagram-3"></i>
+                </div>
+                <h3 class="benefit-title">Networking inteligente</h3>
+                <p class="benefit-description">
                     Conectividad optimizada y balanceo desde el primer deploy.
                 </p>
             </div>
-        </div>
 
-        <div class="col-md-6 col-lg-3 text-center" data-aos="fade-up" data-aos-delay="200">
             <div class="benefit-item">
-                <i class="bi bi-bar-chart"></i>
-                <h5 class="fw-bold">Escala automática</h5>
-                <p class="text-secondary small">
+                <div class="benefit-icon">
+                    <i class="bi bi-bar-chart"></i>
+                </div>
+                <h3 class="benefit-title">Escala automática</h3>
+                <p class="benefit-description">
                     Ajustes de capacidad sin intervención manual.
                 </p>
             </div>
-        </div>
 
-        <div class="col-md-6 col-lg-3 text-center" data-aos="fade-up" data-aos-delay="300">
             <div class="benefit-item">
-                <i class="bi bi-speedometer2"></i>
-                <h5 class="fw-bold">Monitorización total</h5>
-                <p class="text-secondary small">
+                <div class="benefit-icon">
+                    <i class="bi bi-speedometer2"></i>
+                </div>
+                <h3 class="benefit-title">Monitorización total</h3>
+                <p class="benefit-description">
                     Logs, métricas y alertas integradas desde el primer día.
                 </p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- PROYECTOS -->
-<section id="proyectos" class="container">
-    <div class="text-center mb-5" data-aos="fade">
-        <span class="mono d-block mb-2" style="color:var(--gold)">// CASE STUDIES</span>
-        <h2 class="fw-bold mb-3">Proyectos Destacados</h2>
-    </div>
+    <!-- Projects -->
+    <section id="proyectos">
+        <div class="section-header">
+            <span class="section-tag">// CASE STUDIES</span>
+            <h2 class="section-title">Proyectos Destacados</h2>
+        </div>
 
-    <div class="row g-4">
-        <div class="col-lg-4 col-md-6" data-aos="fade-up">
-            <div class="card-jeton">
-                <div class="project-visual" style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)">
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-visual" style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);">
                     <i class="bi bi-bank"></i>
                 </div>
-                <h5 class="fw-bold">Core Bancario Distribuido</h5>
-                <p class="text-secondary small mb-3">
-                    Procesamiento en tiempo real con resiliencia y redundancia.
-                </p>
-                <ul class="mono small text-secondary mt-auto list-unstyled">
-                    <li>Java · Spring Boot</li>
-                    <li>Kafka · PostgreSQL</li>
-                    <li>High Availability</li>
-                </ul>
+                <div class="project-content">
+                    <h3 class="project-title">Core Bancario Distribuido</h3>
+                    <p class="project-description">
+                        Procesamiento en tiempo real con resiliencia y redundancia para operaciones críticas.
+                    </p>
+                    <ul class="project-tech">
+                        <li>Java</li>
+                        <li>Spring Boot</li>
+                        <li>Kafka</li>
+                        <li>PostgreSQL</li>
+                        <li>High Availability</li>
+                    </ul>
+                </div>
             </div>
-        </div>
 
-        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="card-jeton">
-                <div class="project-visual" style="background:linear-gradient(135deg,#232526,#414345)">
+            <div class="project-card">
+                <div class="project-visual" style="background: linear-gradient(135deg, #232526, #414345);">
                     <i class="bi bi-cloud-check"></i>
                 </div>
-                <h5 class="fw-bold">Plataforma de Microservicios Cloud</h5>
-                <p class="text-secondary small mb-3">
-                    Contenedores y CI/CD automatizado desde cero.
-                </p>
-                <ul class="mono small text-secondary mt-auto list-unstyled">
-                    <li>Node.js · NestJS</li>
-                    <li>Docker · AWS</li>
-                    <li>Escalabilidad real</li>
-                </ul>
+                <div class="project-content">
+                    <h3 class="project-title">Plataforma de Microservicios Cloud</h3>
+                    <p class="project-description">
+                        Contenedores y CI/CD automatizado desde cero con escalabilidad real.
+                    </p>
+                    <ul class="project-tech">
+                        <li>Node.js</li>
+                        <li>NestJS</li>
+                        <li>Docker</li>
+                        <li>AWS</li>
+                        <li>Kubernetes</li>
+                    </ul>
+                </div>
             </div>
-        </div>
 
-        <div class="col-lg-4 col-md-12" data-aos="fade-up" data-aos-delay="200">
-            <div class="card-jeton">
-                <div class="project-visual" style="background:linear-gradient(135deg,#1d2671,#c33764)">
+            <div class="project-card">
+                <div class="project-visual" style="background: linear-gradient(135deg, #1d2671, #c33764);">
                     <i class="bi bi-diagram-3"></i>
                 </div>
-                <h5 class="fw-bold">Arquitectura Empresarial Global</h5>
-                <p class="text-secondary small mb-3">
-                    Gobierno técnico completo y diseño escalable.
-                </p>
-                <ul class="mono small text-secondary mt-auto list-unstyled">
-                    <li>DDD · Clean Architecture</li>
-                    <li>Observabilidad</li>
-                    <li>Governance</li>
-                </ul>
+                <div class="project-content">
+                    <h3 class="project-title">Arquitectura Empresarial Global</h3>
+                    <p class="project-description">
+                        Gobierno técnico completo y diseño escalable para operaciones internacionales.
+                    </p>
+                    <ul class="project-tech">
+                        <li>DDD</li>
+                        <li>Clean Architecture</li>
+                        <li>Observabilidad</li>
+                        <li>Governance</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- FOOTER -->
-<footer>
-    <div class="container">
-        <!-- Imagen del footer con dimensiones específicas -->
-        <div class="footer-logo-container" data-aos="fade-up">
-            <!-- Cambia "tu-imagen.jpg" por el nombre real de tu imagen -->
-             
-            <img src="img/logo-final.svg" alt="KIRO Studio - Software Lead & Architecture" 
-                 class="footer-logo-img"
-                 onerror="this.src='https://placehold.co/823x301/8FC899/000?text=KIRO_STUDIO'">
-            <div class="footer-logo-text mono">SOFTWARE LEAD & ARCHITECTURE</div>
-        </div>
+    <!-- Footer Logo Section -->
+    <section class="footer-logo-section">
+        <img src="img/logo-final.svg" alt="KIRO Studio - Software Lead & Architecture" class="footer-logo" 
+             onerror="this.onerror=null; this.src='img/image.png';">
+    </section>
 
-        <div class="row g-5 mt-4">
-            <div class="col-lg-4 footer-col text-center-mobile">
-                <div class="mb-3">
-                    <span class="fw-bold mono fs-4" style="color: var(--mint)">KIRO_STUDIO</span>
-                </div>
-                <p class="text-secondary small">
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">KIRO_STUDIO</div>
+                <p class="footer-description">
                     Especializados en diseño de arquitecturas escalables y liderazgo técnico.<br>
                     Transformamos ideas en soluciones técnicas robustas.
                 </p>
             </div>
 
-            <div class="col-lg-2 col-md-6 footer-col text-center-mobile">
-                <p class="footer-header">Navegación</p>
-                <a href="#servicios" class="footer-item">Servicios</a>
-                <a href="#beneficios" class="footer-item">Beneficios</a>
-                <a href="#proyectos" class="footer-item">Proyectos</a>
-                <a href="#" class="footer-item">Blog</a>
+            <div>
+                <h4 class="footer-title">Navegación</h4>
+                <ul class="footer-links">
+                    <li><a href="#servicios" class="footer-link">Servicios</a></li>
+                    <li><a href="#beneficios" class="footer-link">Beneficios</a></li>
+                    <li><a href="#proyectos" class="footer-link">Proyectos</a></li>
+                    <li><a href="#" class="footer-link">Blog</a></li>
+                </ul>
             </div>
 
-            <div class="col-lg-3 col-md-6 footer-col text-center-mobile">
-                <p class="footer-header">Contacto</p>
-                <span class="footer-item"><i class="bi bi-geo-alt me-2"></i>Ecuador</span>
-                <span class="footer-item"><i class="bi bi-phone me-2"></i>+593 96 390 5728</span>
-                <a href="mailto:contacto@kirostudio.com" class="footer-item">
-                    <i class="bi bi-envelope me-2"></i>contacto@kirostudio.com
-                </a>
-                <a href="https://wa.me/593963905728" class="footer-item" style="color:var(--mint)">
-                    <i class="bi bi-whatsapp me-2"></i>WhatsApp Directo
-                </a>
+            <div>
+                <h4 class="footer-title">Contacto</h4>
+                <ul class="footer-links">
+                    <li><span class="footer-link"><i class="bi bi-geo-alt"></i> Ecuador</span></li>
+                    <li><span class="footer-link"><i class="bi bi-phone"></i> +593 96 390 5728</span></li>
+                    <li><a href="mailto:contacto@kirostudio.com" class="footer-link"><i class="bi bi-envelope"></i> Email</a></li>
+                    <li><a href="https://wa.me/593963905728" class="footer-link" style="color: var(--primary);"><i class="bi bi-whatsapp"></i> WhatsApp</a></li>
+                </ul>
             </div>
 
-            <div class="col-lg-3 footer-col text-center-mobile">
-                <p class="footer-header">Conecta</p>
-                <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
-                    <a href="#" class="text-white fs-4" aria-label="LinkedIn" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                    <a href="#" class="text-white fs-4" aria-label="GitHub" title="GitHub"><i class="bi bi-github"></i></a>
-                    <a href="#" class="text-white fs-4" aria-label="Twitter" title="Twitter"><i class="bi bi-twitter-x"></i></a>
-                    <a href="#" class="text-white fs-4" aria-label="Instagram" title="Instagram"><i class="bi bi-instagram"></i></a>
+            <div>
+                <h4 class="footer-title">Conecta</h4>
+                <div class="footer-social">
+                    <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" aria-label="GitHub"><i class="bi bi-github"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
                 </div>
-                <p class="text-secondary small mt-3">
-                    Síguenos para conocer casos de estudio, tips técnicos y novedades.
+                <p class="footer-description" style="margin-top: 1.5rem;">
+                    Síguenos para casos de estudio y tips técnicos.
                 </p>
             </div>
         </div>
 
-        <div class="mt-5 pt-4 border-top border-secondary text-center">
-            <p class="text-secondary small mono mb-0">
-                © 2026 KIRO STUDIO — ENGINEERED_IN_ECUADOR — ALL_RIGHTS_RESERVED
-            </p>
-            <p class="text-secondary smaller mt-2" style="font-size: 0.75rem;">
+        <div class="footer-bottom">
+            <p>© 2026 KIRO STUDIO — ENGINEERED_IN_ECUADOR</p>
+            <p style="margin-top: 0.5rem; font-size: 0.75rem;">
                 Arquitectura de Software · Microservicios · Cloud Solutions · Tech Leadership
             </p>
         </div>
-    </div>
-</footer>
+    </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({ 
-        duration: 800, 
-        once: true,
-        offset: 100,
-        disable: window.innerWidth < 768 ? true : false
-    });
-    
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            if(targetId === '#') return;
-            
-            const targetElement = document.querySelector(targetId);
-            if(targetElement) {
-                window.scrollTo({
-                    top: targetElement.offsetTop - 80,
-                    behavior: 'smooth'
-                });
-            }
+    <script>
+        // Mobile Menu Toggle
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        mobileToggle.addEventListener('click', () => {
+            mobileToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
         });
-    });
 
-    // Preload de imagen del footer para mejor performance
-    window.addEventListener('load', function() {
-        const footerImg = document.querySelector('.footer-logo-img');
-        if(footerImg) {
-            const img = new Image();
-            img.src = footerImg.src;
+        // Close menu on link click
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Custom Cursor
+        if (window.matchMedia('(pointer: fine)').matches) {
+            const cursor = document.querySelector('.cursor');
+            const cursorFollower = document.querySelector('.cursor-follower');
+
+            let mouseX = 0, mouseY = 0;
+            let followerX = 0, followerY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursor.style.transform = `translate(${mouseX - 4}px, ${mouseY - 4}px)`;
+            });
+
+            function animateFollower() {
+                const distX = mouseX - followerX;
+                const distY = mouseY - followerY;
+                
+                followerX += distX * 0.1;
+                followerY += distY * 0.1;
+                
+                cursorFollower.style.transform = `translate(${followerX - 16}px, ${followerY - 16}px)`;
+                requestAnimationFrame(animateFollower);
+            }
+            animateFollower();
+
+            // Scale cursor on hover
+            document.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.transform += ' scale(1.5)';
+                    cursorFollower.style.transform += ' scale(1.5)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.transform = cursor.style.transform.replace(' scale(1.5)', '');
+                    cursorFollower.style.transform = cursorFollower.style.transform.replace(' scale(1.5)', '');
+                });
+            });
         }
-    });
-</script>
+
+        // Scroll Progress Bar
+        const progressBar = document.querySelector('.progress-bar');
+        
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.service-card, .benefit-item, .project-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
 
 </body>
 </html>
