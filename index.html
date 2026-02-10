@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KIRO — Software Lead & Architecture</title>
-    
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,6 +51,64 @@
         ::selection {
             background: var(--primary);
             color: var(--dark);
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .loader-logo {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .loader-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+            border-radius: 10px;
         }
 
         /* Custom Cursor Effect */
@@ -522,6 +580,7 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+            min-height: 400px;
         }
 
         .footer-logo-section::before {
@@ -535,13 +594,10 @@
             background: radial-gradient(circle, rgba(143, 200, 153, 0.05) 0%, transparent 70%);
         }
 
-        .footer-logo {
-            max-width: 1200px;
-            width: 100%;
-            height: auto;
-            filter: drop-shadow(0 10px 40px rgba(143, 200, 153, 0.15));
+        .footer-logo-section dotlottie-player {
             position: relative;
             z-index: 1;
+            filter: drop-shadow(0 10px 40px rgba(143, 200, 153, 0.15));
         }
 
         /* Footer */
@@ -627,6 +683,17 @@
             color: var(--gray);
         }
 
+        /* Scroll Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 9999;
+            transform-origin: left;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .footer-grid {
@@ -694,6 +761,12 @@
 
             .footer-logo-section {
                 padding: 5rem 2rem;
+                min-height: 300px;
+            }
+
+            .footer-logo-section dotlottie-player {
+                width: 300px !important;
+                height: 300px !important;
             }
 
             footer {
@@ -703,6 +776,11 @@
             .hero-actions {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+            
+            .loader-logo {
+                width: 150px;
+                height: 150px;
             }
         }
 
@@ -723,21 +801,43 @@
             .benefits-grid {
                 grid-template-columns: 1fr;
             }
-        }
 
-        /* Scroll Progress Bar */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            z-index: 9999;
-            transform-origin: left;
+            .footer-logo-section {
+                min-height: 250px;
+            }
+
+            .footer-logo-section dotlottie-player {
+                width: 250px !important;
+                height: 250px !important;
+            }
+
+            .loader-logo {
+                width: 120px;
+                height: 120px;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <dotlottie-player 
+                    src="img/kir0.json" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 100%; height: 100%;"
+                    loop 
+                    autoplay>
+                </dotlottie-player>
+            </div>
+            <div class="loader-progress">
+                <div class="loader-progress-bar" id="loader-progress"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Custom Cursors -->
     <div class="cursor"></div>
@@ -940,8 +1040,14 @@
 
     <!-- Footer Logo Section -->
     <section class="footer-logo-section">
-        <img src="img/logo-final.svg" alt="KIRO Studio - Software Lead & Architecture" class="footer-logo" 
-             onerror="this.onerror=null; this.src='img/image.png';">
+        <dotlottie-player 
+            src="img/kir0.json" 
+            background="transparent" 
+            speed="1" 
+            style="width: 500px; height: 500px;"
+            loop 
+            autoplay>
+        </dotlottie-player>
     </section>
 
     <!-- Footer -->
@@ -998,6 +1104,48 @@
     </footer>
 
     <script>
+        // Loader Management
+        const loader = document.getElementById('loader');
+        const loaderProgress = document.getElementById('loader-progress');
+        const totalDelay = 4000; // 4 segundos de retraso adicional después de cargar
+
+        // Función para simular progreso de carga
+        function simulateLoading() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 95) {
+                    progress = 95;
+                    clearInterval(interval);
+                }
+                loaderProgress.style.width = `${progress}%`;
+            }, 300);
+            
+            return interval;
+        }
+
+        // Esperar a que todo el contenido esté cargado
+        window.addEventListener('load', function() {
+            // Detener la simulación de progreso
+            clearInterval(simulateLoading());
+            
+            // Completar la barra de progreso
+            loaderProgress.style.width = '100%';
+            
+            // Esperar 4 segundos adicionales antes de ocultar el loader
+            setTimeout(() => {
+                loader.classList.add('fade-out');
+                
+                // Remover el loader del DOM después de la animación
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 800); // Tiempo de la animación de fade-out
+            }, totalDelay);
+        });
+
+        // Iniciar simulación de carga inmediatamente
+        simulateLoading();
+
         // Mobile Menu Toggle
         const mobileToggle = document.querySelector('.mobile-toggle');
         const navMenu = document.querySelector('.nav-menu');
@@ -1015,7 +1163,7 @@
             });
         });
 
-        // Custom Cursor
+        // Custom Cursor (solo después de que se quite el loader)
         if (window.matchMedia('(pointer: fine)').matches) {
             const cursor = document.querySelector('.cursor');
             const cursorFollower = document.querySelector('.cursor-follower');
@@ -1077,7 +1225,7 @@
             });
         });
 
-        // Intersection Observer for fade-in animations
+        // Intersection Observer for fade-in animations (solo después del loader)
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -100px 0px'
@@ -1092,12 +1240,15 @@
             });
         }, observerOptions);
 
-        document.querySelectorAll('.service-card, .benefit-item, .project-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease';
-            observer.observe(el);
-        });
+        // Observar elementos después de que se quite el loader
+        setTimeout(() => {
+            document.querySelectorAll('.service-card, .benefit-item, .project-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        }, totalDelay + 800); // Después del loader + animación
     </script>
 
 </body>
